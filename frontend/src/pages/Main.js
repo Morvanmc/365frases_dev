@@ -1,34 +1,53 @@
-import React from 'react'
-import { StyleSheet, View, Text, Image, ScrollView } from 'react-native'
+import React from 'react';
+import { StyleSheet, View, Text, Image, FlatList, Button } from 'react-native';
+//import { SwiperFlatList } from 'react-native-swiper-flatlist';
+import { ImgData } from '../utils/ImgData'
 
-import { MaterialIcons } from '@expo/vector-icons'
+
+const imageW = 100;
+const imageH = 100;
 
 function Main() {
+
     return (
         <View style={styles.container}>
             <View style={styles.dateArea}>
                 <Text style={styles.texto}>AGOSTO 25</Text>
             </View>
-            
+
             <View style={styles.phraseArea}>
-                <Text style={styles.phrase}>“ Seu beijo de despidida foi como um cigarro que fumei pela metade. 
+                <Text style={styles.phrase}>“ Seu beijo de despidida foi como um cigarro que fumei pela metade.
                     Meio que me matou ”</Text>
                 <Text style={styles.author}>- Morvan Marques -</Text>
             </View>
-            
+
             <View style={styles.backgroundArea}>
-                <MaterialIcons name="navigate-before" size={40} color="#000" />
-                <Image source={require('../img/backgrounds/noBG.png')}
-                    style={styles.bgItem} />
-                <Image source={require('../img/backgrounds/bgOne.png')} 
-                    style={styles.bgItem} />
-                <Image source={require('../img/backgrounds/bgTwo.png')}
-                    style={styles.bgItem} />
-                <MaterialIcons name="navigate-next" size={40} color="#000" />
+                <FlatList
+                    data={ImgData}
+                    keyExtractor={(_, index) => index.toString()}
+                    horizontal
+                    pagingEnabled
+                    renderItem={({ item }) => {
+                        return <View style={styles.imgArea}>
+                            <Image source={item} style={styles.imgItem} />
+                        </View>
+                    }}
+                />
+            </View>
+            <View style={styles.btnArea}>
+                <Button 
+                    style={styles.btnPhrase}
+                    onPress={() => {}}
+                    title="+ 2"/>
+                <Button 
+                    style={styles.btnNewPhrase}
+                    onPress={() => {}}
+                    title="CRIE A SUA FRASE"/>
             </View>
         </View>
     )
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -45,11 +64,11 @@ const styles = StyleSheet.create({
 
     texto: {
         height: 50,
-        width: 200,        
+        width: 200,
         fontSize: 32,
-        fontWeight: 'bold',        
+        fontWeight: 'bold',
         color: '#0C1618',
-        
+
     },
 
     phraseArea: {
@@ -78,17 +97,34 @@ const styles = StyleSheet.create({
 
     backgroundArea: {
         marginTop: 30,
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'row',
     },
 
-    bgItem: {
-        width: 70,
-        height: 70,
-        borderColor: '#000',
+    imgArea: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+
+    imgItem: {
+        width: imageW,
+        height: imageH,
+        resizeMode: 'cover',
+        borderRadius: 10,
         borderWidth: 1,
-    }
+        borderColor: 'black'
+    },
+
+    btnArea: {
+        flexDirection: 'row',
+    },
+
+    btnPhrase: {
+        width: 130,
+        height: 50,
+    },
 });
 
 export default Main;
