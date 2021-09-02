@@ -1,18 +1,31 @@
-import React from 'react';
-import { StyleSheet, View, Text, Image, FlatList, Button } from 'react-native';
-//import { SwiperFlatList } from 'react-native-swiper-flatlist';
-import { ImgData } from '../utils/ImgData'
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons'
 
-
-const imageW = 100;
-const imageH = 100;
+import SwiperBackgrounds from '../components/SwiperBackgrounds';
+import GeneralButton from '../components/GeneralButton';
 
 function Main() {
+const [ currentDate, setCurrentDate ] = useState([]);
+
+useEffect(() => {
+    function getCurrentDate() {
+        const date = new Date();
+        const month = date.getMonth();
+        const monthName = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio',
+                            'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        const day = date.getDay();
+
+        setCurrentDate(`${monthName[month]} ${day}`);
+    }
+
+    getCurrentDate();
+}, []);
 
     return (
         <View style={styles.container}>
             <View style={styles.dateArea}>
-                <Text style={styles.texto}>AGOSTO 25</Text>
+                <Text style={styles.texto}>{currentDate}</Text>
             </View>
 
             <View style={styles.phraseArea}>
@@ -22,27 +35,22 @@ function Main() {
             </View>
 
             <View style={styles.backgroundArea}>
-                <FlatList
-                    data={ImgData}
-                    keyExtractor={(_, index) => index.toString()}
-                    horizontal
-                    pagingEnabled
-                    renderItem={({ item }) => {
-                        return <View style={styles.imgArea}>
-                            <Image source={item} style={styles.imgItem} />
-                        </View>
-                    }}
-                />
+                <SwiperBackgrounds />
             </View>
+
+            <View>
+                <MaterialIcons name="share" size={40} color="#000" />
+            </View>
+
             <View style={styles.btnArea}>
-                <Button 
-                    style={styles.btnPhrase}
+                <GeneralButton
+                    backgroundColor="#004643"
                     onPress={() => {}}
-                    title="+ 2"/>
-                <Button 
-                    style={styles.btnNewPhrase}
+                    title="+ 2" />
+                <GeneralButton
+                    backgroundColor="#D1AC00"
                     onPress={() => {}}
-                    title="CRIE A SUA FRASE"/>
+                    title="CRIE A SUA" />
             </View>
         </View>
     )
@@ -68,6 +76,7 @@ const styles = StyleSheet.create({
         fontSize: 32,
         fontWeight: 'bold',
         color: '#0C1618',
+        textAlign: 'center',
 
     },
 
@@ -96,34 +105,14 @@ const styles = StyleSheet.create({
     },
 
     backgroundArea: {
-        marginTop: 30,
+        marginTop: 5,
         justifyContent: 'center',
-        alignItems: 'center',
         flexDirection: 'row',
-    },
-
-    imgArea: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-    },
-
-    imgItem: {
-        width: imageW,
-        height: imageH,
-        resizeMode: 'cover',
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: 'black'
+        padding: 30,
     },
 
     btnArea: {
         flexDirection: 'row',
-    },
-
-    btnPhrase: {
-        width: 130,
-        height: 50,
     },
 });
 
