@@ -1,17 +1,30 @@
 import React from 'react';
-import { StyleSheet, View, Image, FlatList } from 'react-native';
-import { ImgData } from '../utils/ImgData'
+import { StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
+import { ImgData } from '../utils/Datas'
 
-function SwiperBackgrounds() {
+function SwiperBackgrounds({ setChangeBackground, changeBackground }) {
+
+    function changeBackground(source) {
+        console.log(source)
+        const newSource = source === '../img/backgrounds/noBG.png' ? source = '' : source ;
+         console.log(newSource)
+        return newSource;
+    }
+
+
     return (
         <FlatList
             data={ImgData}
             keyExtractor={(_, index) => index.toString()}
             horizontal
             renderItem={({ item }) => {
-                return <View style={styles.imgArea}>
+                return (
+                <TouchableOpacity style={styles.imgArea}
+                    onPress={() => setChangeBackground(changeBackground(changeBackground))}
+                >
                     <Image source={item} style={styles.imgItem} />
-                </View>
+                </TouchableOpacity>
+                )
             }}
         />
     )

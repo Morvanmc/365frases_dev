@@ -1,56 +1,76 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons'
+import { StyleSheet, View, Text, TouchableOpacity, ImageBackground } from 'react-native';
+import { MaterialIcons, Foundation } from '@expo/vector-icons'
 
 import SwiperBackgrounds from '../components/SwiperBackgrounds';
-import GeneralButton from '../components/GeneralButton';
+import { MonthNames } from '../utils/Datas';
+import api from '../services/api';
 
 function Main() {
-const [ currentDate, setCurrentDate ] = useState([]);
+    const [currentDate, setCurrentDate] = useState('');
+    const [showContent, setShowContent] = useState([]);
+    const [changeBackground, setChangeBackground] = useState('../img/backgrounds/noBG.png')
 
-useEffect(() => {
-    function getCurrentDate() {
-        const date = new Date();
-        const month = date.getMonth();
-        const monthName = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio',
-                            'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-        const day = date.getDay();
+    useEffect(() => {
+        async function getCurrentDate() {
+            const date = await new Date();
+            const month = date.getMonth();
+            const day = date.getDay();
 
-        setCurrentDate(`${monthName[month]} ${day}`);
-    }
+            setCurrentDate(`${MonthNames[month]} ${day}`);
+        }
 
-    getCurrentDate();
-}, []);
+        getCurrentDate();
+    }, []);
+
+    useEffect(() => {
+        async function loadPhrase() {
+            const response = await api.get('/phrase');
+            const currencyContent = [...response.data]
+            const max = currencyContent.length;
+            const randomIndex = await getRandomIndex(0, max);
+
+            async function getRandomIndex(min, max) {
+                min = Math.ceil(min);
+                max = Math.floor(max);
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            setShowContent(currencyContent[randomIndex]);
+        }
+
+        loadPhrase();
+    }, []);
+
 
     return (
         <View style={styles.container}>
             <View style={styles.dateArea}>
                 <Text style={styles.texto}>{currentDate}</Text>
             </View>
-
             <View style={styles.phraseArea}>
-                <Text style={styles.phrase}>“ Seu beijo de despidida foi como um cigarro que fumei pela metade.
-                    Meio que me matou ”</Text>
-                <Text style={styles.author}>- Morvan Marques -</Text>
+                <ImageBackground source={`${changeBackground}`} style={styles.phraseArea}>
+                    <Text style={styles.phrase}>{showContent.content}</Text>
+                    <Text style={styles.author}>- {showContent.author} -</Text>
+                </ImageBackground>
             </View>
 
             <View style={styles.backgroundArea}>
-                <SwiperBackgrounds />
+                <SwiperBackgrounds setChangeBackground={setChangeBackground} changeBackground={changeBackground} />
             </View>
 
-            <View>
-                <MaterialIcons name="share" size={40} color="#000" />
-            </View>
+            <TouchableOpacity style={styles.shareArea}>
+                <MaterialIcons name="share" size={30} color="#000" />
+            </TouchableOpacity>
 
-            <View style={styles.btnArea}>
-                <GeneralButton
-                    backgroundColor="#004643"
-                    onPress={() => {}}
-                    title="+ 2" />
-                <GeneralButton
-                    backgroundColor="#D1AC00"
-                    onPress={() => {}}
-                    title="CRIE A SUA" />
+            <View style={styles.buttonArea}>
+                <TouchableOpacity style={styles.buttonItem}>
+                    <MaterialIcons name="sync" size={30} color="#000" />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.buttonItem}>
+                    <Foundation name="comment-quotes" size={30} color="black" />
+                </TouchableOpacity>
             </View>
         </View>
     )
@@ -67,7 +87,7 @@ const styles = StyleSheet.create({
 
     dateArea: {
         flexDirection: 'row',
-        marginBottom: 35,
+        marginBottom: 20,
     },
 
     texto: {
@@ -75,32 +95,34 @@ const styles = StyleSheet.create({
         width: 200,
         fontSize: 32,
         fontWeight: 'bold',
-        color: '#0C1618',
+        color: '#000',
         textAlign: 'center',
+        borderBottomWidth: 1,
+        borderColor: "#DCDCDC",
 
     },
 
     phraseArea: {
-        width: 320,
-        height: 240,
+        width: 350,
+        height: 280,
         backgroundColor: '#FFF',
         justifyContent: 'center',
         alignItems: 'center',
     },
 
     phrase: {
-        fontSize: 18,
+        fontSize: 22,
         textAlign: 'center',
-        color: '#0C1618',
+        color: '#000',
         marginTop: 20,
         marginLeft: 5,
         marginRight: 5,
     },
 
     author: {
-        fontSize: 14,
+        fontSize: 16,
         textAlign: 'center',
-        color: '#0C1618',
+        color: '#000',
         marginTop: 25,
     },
 
@@ -108,11 +130,39 @@ const styles = StyleSheet.create({
         marginTop: 5,
         justifyContent: 'center',
         flexDirection: 'row',
-        padding: 30,
+        padding: 20,
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: "#DCDCDC",
     },
 
-    btnArea: {
+    shareArea: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: '#D3D3D3',
+        backgroundColor: '#FFF',
+        marginTop: 50,
+        borderWidth: 1,
+        width: 70,
+        height: 50,
+    },
+
+    buttonArea: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 30,
+    },
+
+    buttonItem: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: '#D3D3D3',
+        backgroundColor: '#FFF',
+        borderWidth: 1,
+        width: 130,
+        height: 70,
+        marginLeft: 10,
+        marginRight: 10,
     },
 });
 
