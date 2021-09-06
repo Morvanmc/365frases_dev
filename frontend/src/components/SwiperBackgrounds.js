@@ -2,15 +2,7 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
 import { ImgData } from '../utils/Datas'
 
-function SwiperBackgrounds({ setChangeBackground, changeBackground }) {
-
-    function changeBackground(source) {
-        console.log(source)
-        const newSource = source === '../img/backgrounds/noBG.png' ? source = '' : source ;
-         console.log(newSource)
-        return newSource;
-    }
-
+function SwiperBackgrounds(props) {
 
     return (
         <FlatList
@@ -20,9 +12,9 @@ function SwiperBackgrounds({ setChangeBackground, changeBackground }) {
             renderItem={({ item }) => {
                 return (
                 <TouchableOpacity style={styles.imgArea}
-                    onPress={() => setChangeBackground(changeBackground(changeBackground))}
+                    onPress={() => props.changeBackground(item)}
                 >
-                    <Image source={item} style={styles.imgItem} />
+                    <Image source={ item } style={styles.imgItem} />
                 </TouchableOpacity>
                 )
             }}

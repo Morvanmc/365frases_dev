@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ImageBackground } from 'react-native';
-import { MaterialIcons, Foundation } from '@expo/vector-icons'
+import { MaterialIcons, Foundation } from '@expo/vector-icons';
 
 import SwiperBackgrounds from '../components/SwiperBackgrounds';
 import { MonthNames } from '../utils/Datas';
@@ -9,15 +9,18 @@ import api from '../services/api';
 function Main() {
     const [currentDate, setCurrentDate] = useState('');
     const [showContent, setShowContent] = useState([]);
-    const [changeBackground, setChangeBackground] = useState('../img/backgrounds/noBG.png')
+    const [newBackground, setNewBackground] = useState()
 
     useEffect(() => {
-        async function getCurrentDate() {
-            const date = await new Date();
-            const month = date.getMonth();
-            const day = date.getDay();
+        function getCurrentDate() {
+            try {
+                const date = new Date();
+                const tilteDate = `${MonthNames[date.getMonth()]} ${date.getDate()}`
 
-            setCurrentDate(`${MonthNames[month]} ${day}`);
+                setCurrentDate(tilteDate);
+            } catch (err) {
+                console.log(err);
+            }
         }
 
         getCurrentDate();
@@ -25,23 +28,29 @@ function Main() {
 
     useEffect(() => {
         async function loadPhrase() {
-            const response = await api.get('/phrase');
-            const currencyContent = [...response.data]
-            const max = currencyContent.length;
-            const randomIndex = await getRandomIndex(0, max);
+            try {
+                const response = await api.get('/phrase');
+                const currencyContent = [...response.data]
+                const max = currencyContent.length;
+                const randomIndex = getRandomIndex(0, max);
 
-            async function getRandomIndex(min, max) {
-                min = Math.ceil(min);
-                max = Math.floor(max);
-                return Math.floor(Math.random() * (max - min + 1)) + min;
+                function getRandomIndex(min, max) {
+                    min = Math.ceil(min);
+                    max = Math.floor(max);
+                    return Math.floor(Math.random() * (max - min + 1)) + min;
+                }
+
+                setShowContent({
+                    content: currencyContent[randomIndex].content,
+                    author: currencyContent[randomIndex].author
+                });
+            } catch (err) {
+                console.log(err);
             }
-
-            setShowContent(currencyContent[randomIndex]);
         }
 
         loadPhrase();
     }, []);
-
 
     return (
         <View style={styles.container}>
@@ -49,14 +58,14 @@ function Main() {
                 <Text style={styles.texto}>{currentDate}</Text>
             </View>
             <View style={styles.phraseArea}>
-                <ImageBackground source={`${changeBackground}`} style={styles.phraseArea}>
+                <ImageBackground source={newBackground} style={styles.phraseArea}>
                     <Text style={styles.phrase}>{showContent.content}</Text>
                     <Text style={styles.author}>- {showContent.author} -</Text>
                 </ImageBackground>
             </View>
 
             <View style={styles.backgroundArea}>
-                <SwiperBackgrounds setChangeBackground={setChangeBackground} changeBackground={changeBackground} />
+                <SwiperBackgrounds changeBackground={newBackground => setNewBackground(newBackground)} />
             </View>
 
             <TouchableOpacity style={styles.shareArea}>
@@ -74,6 +83,7 @@ function Main() {
             </View>
         </View>
     )
+
 };
 
 
@@ -98,7 +108,7 @@ const styles = StyleSheet.create({
         color: '#000',
         textAlign: 'center',
         borderBottomWidth: 1,
-        borderColor: "#DCDCDC",
+        borderColor: "#6B705C",
 
     },
 
@@ -127,13 +137,13 @@ const styles = StyleSheet.create({
     },
 
     backgroundArea: {
-        marginTop: 5,
+        marginTop: 25,
         justifyContent: 'center',
         flexDirection: 'row',
         padding: 20,
-        borderTopWidth: 1,
-        borderBottomWidth: 1,
-        borderColor: "#DCDCDC",
+        borderTopWidth: 2,
+        borderBottomWidth: 2,
+        borderColor: "#6B705C",
     },
 
     shareArea: {
