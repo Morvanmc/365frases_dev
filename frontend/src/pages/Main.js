@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ImageBackground } from 'react-native';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 import { MaterialIcons, Foundation } from '@expo/vector-icons';
 
 import SwiperBackgrounds from '../components/SwiperBackgrounds';
@@ -12,6 +14,7 @@ function Main() {
     const [newBackground, setNewBackground] = useState()
 
     useEffect(() => {
+        //Date Title
         function getCurrentDate() {
             try {
                 const date = new Date();
@@ -27,6 +30,7 @@ function Main() {
     }, []);
 
     useEffect(() => {
+        //First Phrase
         async function loadPhrase() {
             try {
                 const response = await api.get('/phrase');
@@ -52,12 +56,47 @@ function Main() {
         loadPhrase();
     }, []);
 
+    //Capture View and Share
+    const viewRef = useRef();
+    async function imageShare() {
+        const uri = await captureRef(viewRef, {
+            format: 'png',
+            quality: 1
+        });
+
+        Sharing.shareAsync(uri)
+    }
+
+    //Load a new phrase
+    async function newLoadPhrase() {
+        try {
+            const response = await api.get('/phrase');
+            const currencyContent = [...response.data]
+            const max = currencyContent.length;
+            const randomIndex = await getRandomIndex(0, max);
+
+            function getRandomIndex(min, max) {
+                min = Math.ceil(min);
+                max = Math.floor(max);
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            setShowContent({
+                content: currencyContent[randomIndex].content,
+                author: currencyContent[randomIndex].author
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.dateArea}>
                 <Text style={styles.texto}>{currentDate}</Text>
             </View>
-            <View style={styles.phraseArea}>
+
+            <View ref={viewRef} style={styles.phraseArea}>
                 <ImageBackground source={newBackground} style={styles.phraseArea}>
                     <Text style={styles.phrase}>{showContent.content}</Text>
                     <Text style={styles.author}>- {showContent.author} -</Text>
@@ -68,12 +107,18 @@ function Main() {
                 <SwiperBackgrounds changeBackground={newBackground => setNewBackground(newBackground)} />
             </View>
 
-            <TouchableOpacity style={styles.shareArea}>
+            <TouchableOpacity 
+                style={styles.shareArea}
+                onPress={imageShare}
+            >
                 <MaterialIcons name="share" size={30} color="#000" />
             </TouchableOpacity>
 
             <View style={styles.buttonArea}>
-                <TouchableOpacity style={styles.buttonItem}>
+                <TouchableOpacity 
+                    style={styles.buttonItem}
+                    onPress={newLoadPhrase}
+                >
                     <MaterialIcons name="sync" size={30} color="#000" />
                 </TouchableOpacity>
 
@@ -109,7 +154,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         borderBottomWidth: 1,
         borderColor: "#6B705C",
-
     },
 
     phraseArea: {
@@ -127,6 +171,9 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginLeft: 5,
         marginRight: 5,
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowColor: '#FFF',
+        textShadowRadius: 1,
     },
 
     author: {
@@ -134,6 +181,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#000',
         marginTop: 25,
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowColor: '#FFF',
+        textShadowRadius: 1,
     },
 
     backgroundArea: {

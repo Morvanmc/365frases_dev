@@ -13,6 +13,7 @@
     "axios": "^0.21.1",
     "expo": "~41.0.1",
     "expo-font": "~9.1.0",
+    "expo-sharing": "~9.1.2",
     "expo-status-bar": "~1.0.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
@@ -20,6 +21,7 @@
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "~3.0.0",
     "react-native-swiper-flatlist": "^3.0.14",
+    "react-native-view-shot": "3.1.2",
     "react-native-web": "^0.17.1"
   },
   "devDependencies": {
