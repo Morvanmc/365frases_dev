@@ -8,7 +8,7 @@ import SwiperBackgrounds from '../components/SwiperBackgrounds';
 import { MonthNames } from '../utils/Datas';
 import api from '../services/api';
 
-function Main() {
+function Main({ navigation }) {
     const [currentDate, setCurrentDate] = useState('');
     const [showContent, setShowContent] = useState([]);
     const [newBackground, setNewBackground] = useState()
@@ -122,7 +122,11 @@ function Main() {
                     <MaterialIcons name="sync" size={30} color="#000" />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.buttonItem}>
+                <TouchableOpacity 
+                style={styles.buttonItem}
+                onPress={() => {
+                    navigation.navigate('NewPhrase')
+                }}>
                     <Foundation name="comment-quotes" size={30} color="black" />
                 </TouchableOpacity>
             </View>
