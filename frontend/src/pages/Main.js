@@ -18,7 +18,9 @@ function Main({ navigation }) {
         function getCurrentDate() {
             try {
                 const date = new Date();
-                const tilteDate = `${MonthNames[date.getMonth()]} ${date.getDate()}`
+                const month = MonthNames[date.getMonth()];
+                const day = date.getDate();
+                const tilteDate = month + day
 
                 setCurrentDate(tilteDate);
             } catch (err) {
@@ -71,7 +73,7 @@ function Main({ navigation }) {
     async function newLoadPhrase() {
         try {
             const response = await api.get('/phrase');
-            const currencyContent = [...response.data]
+            const currencyContent = [...response.data];
             const max = currencyContent.length;
             const randomIndex = await getRandomIndex(0, max);
 
@@ -140,13 +142,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FBFAF8',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
     },
 
     dateArea: {
-        flexDirection: 'row',
         marginBottom: 20,
+        marginTop: 70,
     },
 
     texto: {

@@ -2,9 +2,31 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 
+import api from '../services/api';
+
 
 function NewPhrase({ navigation }) {
     const [toggleCheckBox, setToggleCheckBox] = useState(false)
+    const [newPhrase, setNewPhrase] = useState('');
+    const [newAuthor, setNewAuthor] = useState('');
+
+    async function saveNewPhrase() {
+        try {
+            if(newPhrase !== '' && newAuthor !== '' && toggleCheckBox){
+                await api.post('/phrase', {
+                    content: newPhrase,
+                    author: newAuthor
+                })
+                setNewPhrase('');
+                setNewAuthor('');
+                setToggleCheckBox(false);
+
+                alert('Agradecemos a sua colaboração!');
+            } else alert('Para cadastrar uma frase é necessário preencher todos os campos e aceitar os termos!')
+        } catch(err) {
+            console.error(err);
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -21,7 +43,8 @@ function NewPhrase({ navigation }) {
                     placeholderTextColor='#D3D3D3'
                     placeholder='Digite sua frase...'
                     maxLength={250}
-                    keybo
+                    value={newPhrase}
+                    onChangeText={setNewPhrase}
                 />
             </View>
 
@@ -31,6 +54,8 @@ function NewPhrase({ navigation }) {
                     style={styles.inputAuthor}
                     autoCorrect
                     maxLength={20}
+                    value={newAuthor}
+                    onChangeText={setNewAuthor}
                 />
             </View>
 
@@ -41,7 +66,10 @@ function NewPhrase({ navigation }) {
                     onValueChange={(newValue) => setToggleCheckBox(newValue)}
                 />
                 <Text style={{ marginRight: 5 }}>Concordo com os</Text>
-                <TouchableOpacity>
+                <TouchableOpacity
+                onPress={() => {
+                    navigation.navigate('TermsOfUse')
+                }}>
                     <Text style={styles.highlight}>TERMOS DE USO</Text>
                 </TouchableOpacity>
             </View>
@@ -49,7 +77,7 @@ function NewPhrase({ navigation }) {
             <View style={styles.buttonArea}>
                 <TouchableOpacity 
                     style={styles.buttonItemSave}
-                    onPress={() => {}}
+                    onPress={saveNewPhrase}
                 >
                     <Text style={styles.btnText}>SALVAR</Text>
                 </TouchableOpacity>
@@ -70,13 +98,13 @@ const styles = new StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FBFAF8',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
     },
 
     titleArea: {
-        flexDirection: 'row',
         marginBottom: 20,
+        marginTop: 70,
     },
 
     title: {
