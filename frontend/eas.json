@@ -1,12 +1,17 @@
 {
   "build": {
     "release": {},
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
+    "local": {
+      "android": {
+        "buildType": "apk"
+      },
+      "development": {
+        "developmentClient": true,
+        "distribution": "internal"
+      }
+    },
+    "submit": {
+      "release": {}
     }
-  },
-  "submit": {
-    "release": {}
   }
 }
