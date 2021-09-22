@@ -22,7 +22,7 @@ function NewPhrase({ navigation }) {
     });
 
     // INTERSTITIAL AD
-    const interstitialAdID = "ca-app-pub-2482722286056863/6270257353";
+    const interstitialAdID = 'yourUnitID or TestID';
     async function showInterstitial() {
         AdMobInterstitial.setAdUnitID(interstitialAdID);
         AdMobInterstitial.requestAdAsync().then(() => {

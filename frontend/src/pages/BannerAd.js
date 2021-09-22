@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { AdMobBanner } from "expo-ads-admob";
 
 const BannerAd = () => {
-const adUnitID = 'ca-app-pub-2482722286056863/1757486644'
+const adUnitID = 'yourUnitID or TestID'
   
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

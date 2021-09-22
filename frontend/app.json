@@ -20,10 +20,10 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.mmcompany.frases",
+      "package": "com.yourcompany.yourappname",
       "versionCode": 1,
       "config": {
-        "googleMobileAdsAppId": "ca-app-pub-2482722286056863~4281893421"
+        "googleMobileAdsAppId": "your-googleAdID"
       },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",

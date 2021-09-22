@@ -21,15 +21,7 @@ function TermsOfUse() {
                     <Text style={styles.terms}>
                         Declaro que estou ciente de que:</Text>
                     <Text style={styles.terms}>
-                        1- Não é permitido cadastrar ou mesmo compartilhar frases de cunhos discriminatórios,
-                        racistas, xenofóbicos ou quaisquer tipos de frase que possa ser ofensiva a qualquer
-                        usuário ou pessoa;</Text>
-                    <Text style={styles.terms}>
-                        2- O mau uso do aplicativo que possa vir a ter qualquer implicação judicial é de
-                        responsabilidade do usuário;</Text>
-                    <Text style={styles.terms}>
-                        3- As frases cadastradas serão usadas no aplicativo, bem como poderão ser
-                        compartilhadas, sem qualquer fim lucrativo;</Text>
+                        1- TERMOS GERAIS</Text>
                 </View>
             </View>
         )
