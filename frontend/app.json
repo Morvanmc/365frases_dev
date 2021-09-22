@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "365 Frases",
+    "slug": "365frases",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FBFAF8"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -20,9 +20,14 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.mmcompany.frases",
+      "versionCode": 1,
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-2482722286056863~4281893421"
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#FBFAF8"
       }
     },
     "web": {

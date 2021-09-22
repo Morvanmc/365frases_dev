@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
+import { AdMobInterstitial } from "expo-ads-admob";
+import AppLoading from 'expo-app-loading';
+import { useFonts, BerkshireSwash_400Regular } from '@expo-google-fonts/berkshire-swash';
+import { Truculenta_400Regular, Truculenta_500Medium } from '@expo-google-fonts/truculenta';
 
 import api from '../services/api';
+import BannerAd from './BannerAd';
 
 
 function NewPhrase({ navigation }) {
@@ -10,88 +15,111 @@ function NewPhrase({ navigation }) {
     const [newPhrase, setNewPhrase] = useState('');
     const [newAuthor, setNewAuthor] = useState('');
 
+    let [fontsLoaded] = useFonts({
+        BerkshireSwash_400Regular,
+        Truculenta_400Regular,
+        Truculenta_500Medium
+    });
+
+    // INTERSTITIAL AD
+    const interstitialAdID = "ca-app-pub-2482722286056863/6270257353";
+    async function showInterstitial() {
+        AdMobInterstitial.setAdUnitID(interstitialAdID);
+        AdMobInterstitial.requestAdAsync().then(() => {
+            AdMobInterstitial.showAdAsync().catch((e) => console.log(e));
+        });
+    }
+
     async function saveNewPhrase() {
         try {
-            if(newPhrase !== '' && newAuthor !== '' && toggleCheckBox){
+            if (newPhrase !== '' && newAuthor !== '' && toggleCheckBox) {
                 await api.post('/phrase', {
                     content: newPhrase,
-                    author: newAuthor
+                    author: newAuthor,
+                    agreeTerms: toggleCheckBox,
                 })
                 setNewPhrase('');
                 setNewAuthor('');
                 setToggleCheckBox(false);
 
                 alert('Agradecemos a sua colaboração!');
+                await showInterstitial();
             } else alert('Para cadastrar uma frase é necessário preencher todos os campos e aceitar os termos!')
-        } catch(err) {
+        } catch (err) {
             console.error(err);
         }
     }
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.titleArea}>
-                <Text style={styles.title}>Qual sua frase?</Text>
-            </View>
+    if (!fontsLoaded) {
+        return <AppLoading />;
+    } else {
+        return (
+            <View style={styles.container}>
+                <View style={styles.titleArea}>
+                    <Text style={styles.title}>Qual sua frase?</Text>
+                </View>
 
-            <View>
-                <TextInput
-                    style={styles.inputPhrase}
-                    multiline={true}
-                    numberOfLines={4}
-                    autoCorrect
-                    placeholderTextColor='#D3D3D3'
-                    placeholder='Digite sua frase...'
-                    maxLength={250}
-                    value={newPhrase}
-                    onChangeText={setNewPhrase}
-                />
-            </View>
+                <View>
+                    <TextInput
+                        style={styles.inputPhrase}
+                        multiline={true}
+                        numberOfLines={4}
+                        autoCorrect
+                        placeholderTextColor='#D3D3D3'
+                        placeholder='Digite sua frase...'
+                        maxLength={250}
+                        value={newPhrase}
+                        onChangeText={setNewPhrase}
+                    />
+                </View>
 
-            <View>
-                <Text style={styles.titleAuthor}>Autor:</Text>
-                <TextInput
-                    style={styles.inputAuthor}
-                    autoCorrect
-                    maxLength={20}
-                    value={newAuthor}
-                    onChangeText={setNewAuthor}
-                />
-            </View>
+                <View>
+                    <Text style={styles.titleAuthor}>Autor:</Text>
+                    <TextInput
+                        style={styles.inputAuthor}
+                        autoCorrect
+                        maxLength={20}
+                        value={newAuthor}
+                        onChangeText={setNewAuthor}
+                    />
+                </View>
 
-            <View style={styles.radioBtnArea}>
-                <CheckBox
-                    disabled={false}
-                    value={toggleCheckBox}
-                    onValueChange={(newValue) => setToggleCheckBox(newValue)}
-                />
-                <Text style={{ marginRight: 5 }}>Concordo com os</Text>
-                <TouchableOpacity
-                onPress={() => {
-                    navigation.navigate('TermsOfUse')
-                }}>
-                    <Text style={styles.highlight}>TERMOS DE USO</Text>
-                </TouchableOpacity>
-            </View>
+                <View style={styles.radioBtnArea}>
+                    <CheckBox
+                        disabled={false}
+                        value={toggleCheckBox}
+                        onValueChange={(newValue) => setToggleCheckBox(newValue)}
+                    />
+                    <Text style={{ marginRight: 5 }}>Concordo com os</Text>
+                    <TouchableOpacity
+                        onPress={() => {
+                            navigation.navigate('TermsOfUse')
+                        }}>
+                        <Text style={styles.highlight}>TERMOS DE USO</Text>
+                    </TouchableOpacity>
+                </View>
 
-            <View style={styles.buttonArea}>
-                <TouchableOpacity 
-                    style={styles.buttonItemSave}
-                    onPress={saveNewPhrase}
-                >
-                    <Text style={styles.btnText}>SALVAR</Text>
-                </TouchableOpacity>
+                <View style={styles.buttonArea}>
+                    <TouchableOpacity
+                        style={styles.buttonItemSave}
+                        onPress={saveNewPhrase}
+                    >
+                        <Text style={styles.btnText}>SALVAR</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity 
-                style={styles.buttonItemCancel}
-                onPress={() => {
-                    navigation.navigate('Home')
-                }}>
-                    <Text style={styles.btnText}>CANCELAR</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.buttonItemCancel}
+                        onPress={() => {
+                            navigation.navigate('Home')
+                        }}>
+                        <Text style={styles.btnText}>CANCELAR</Text>
+                    </TouchableOpacity>
+                </View>
+                <BannerAd />
             </View>
-        </View>
-    )
+        )
+    }
+
 };
 
 const styles = new StyleSheet.create({
@@ -110,8 +138,9 @@ const styles = new StyleSheet.create({
     title: {
         height: 50,
         width: 300,
-        fontSize: 32,
-        fontWeight: 'bold',
+        fontSize: 28,
+        paddingVertical: 6,
+        fontFamily: 'BerkshireSwash_400Regular',
         color: '#000',
         textAlign: 'center',
         borderBottomWidth: 1,
@@ -121,6 +150,7 @@ const styles = new StyleSheet.create({
     inputPhrase: {
         width: 350,
         height: 250,
+        fontFamily: 'Truculenta_400Regular',
         backgroundColor: '#FFF',
         borderWidth: 1,
         padding: 10,
@@ -129,8 +159,8 @@ const styles = new StyleSheet.create({
     },
 
     titleAuthor: {
-        fontSize: 20,
-        fontWeight: 'bold',
+        fontSize: 22,
+        fontFamily: 'Truculenta_500Medium',
         color: '#000',
         marginTop: 20,
         marginBottom: 10,
@@ -139,6 +169,7 @@ const styles = new StyleSheet.create({
     inputAuthor: {
         width: 350,
         height: 50,
+        fontFamily: 'Truculenta_400Regular',
         backgroundColor: '#FFF',
         borderWidth: 1,
         padding: 10,

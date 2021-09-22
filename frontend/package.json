@@ -8,11 +8,15 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@expo-google-fonts/berkshire-swash": "^0.2.0",
+    "@expo-google-fonts/truculenta": "^0.2.0",
     "@react-native-community/checkbox": "^0.5.8",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
     "axios": "^0.21.1",
     "expo": "~41.0.1",
+    "expo-ads-admob": "~10.0.4",
+    "expo-app-loading": "^1.1.2",
     "expo-font": "~9.1.0",
     "expo-sharing": "~9.1.2",
     "expo-status-bar": "~1.0.4",

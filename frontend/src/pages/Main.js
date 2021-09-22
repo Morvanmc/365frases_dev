@@ -2,27 +2,45 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ImageBackground } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
+import { AdMobInterstitial } from "expo-ads-admob";
 import { MaterialIcons, Foundation } from '@expo/vector-icons';
+import AppLoading from 'expo-app-loading';
+import { useFonts, BerkshireSwash_400Regular } from '@expo-google-fonts/berkshire-swash';
+import { Truculenta_400Regular, Truculenta_500Medium } from '@expo-google-fonts/truculenta';
+
 
 import SwiperBackgrounds from '../components/SwiperBackgrounds';
 import { MonthNames } from '../utils/Datas';
 import api from '../services/api';
 
 function Main({ navigation }) {
-    const [currentDate, setCurrentDate] = useState('');
+    const [currentDate, setCurrentDate] = useState("");
     const [showContent, setShowContent] = useState([]);
     const [newBackground, setNewBackground] = useState()
+    const [countAd, setCountAd] = useState(0)
+
+    let [fontsLoaded] = useFonts({
+        BerkshireSwash_400Regular,
+        Truculenta_400Regular,
+        Truculenta_500Medium
+    });
+
+    // INTERSTITIAL AD
+    const interstitialAdID = "ca-app-pub-2482722286056863/4138616716"
+    async function showInterstitial() {
+        AdMobInterstitial.setAdUnitID(interstitialAdID);
+        AdMobInterstitial.requestAdAsync().then(() => {
+            AdMobInterstitial.showAdAsync().catch((e) => console.log(e));
+        });
+    }
 
     useEffect(() => {
         //Date Title
         function getCurrentDate() {
             try {
                 const date = new Date();
-                const month = MonthNames[date.getMonth()];
-                const day = date.getDate();
-                const tilteDate = month + day
-
-                setCurrentDate(tilteDate);
+                const titleDate = MonthNames[date.getMonth()] + " " + date.getDate();
+                setCurrentDate(titleDate);
             } catch (err) {
                 console.log(err);
             }
@@ -50,6 +68,7 @@ function Main({ navigation }) {
                     content: currencyContent[randomIndex].content,
                     author: currencyContent[randomIndex].author
                 });
+                setCountAd(countAd + 1);
             } catch (err) {
                 console.log(err);
             }
@@ -75,7 +94,6 @@ function Main({ navigation }) {
             const response = await api.get('/phrase');
             const currencyContent = [...response.data];
             const max = currencyContent.length;
-            const randomIndex = await getRandomIndex(0, max);
 
             function getRandomIndex(min, max) {
                 min = Math.ceil(min);
@@ -83,58 +101,72 @@ function Main({ navigation }) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
             }
 
-            setShowContent({
-                content: currencyContent[randomIndex].content,
-                author: currencyContent[randomIndex].author
-            });
+            if (countAd % 5 == 0) {
+                await showInterstitial();
+            }
+
+            const randomIndex = await getRandomIndex(0, max);
+
+            if (currencyContent[randomIndex].content !== 'undefined' &&
+                currencyContent[randomIndex].author !== 'undefined') {
+                setShowContent({
+                    content: currencyContent[randomIndex].content,
+                    author: currencyContent[randomIndex].author
+                });
+            };
+
+            setCountAd(countAd + 1);
         } catch (err) {
             console.log(err);
         }
     }
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.dateArea}>
-                <Text style={styles.texto}>{currentDate}</Text>
-            </View>
+    if (!fontsLoaded) {
+        return <AppLoading />;
+    } else {
+        return (
+            <View style={styles.container}>
+                <View style={styles.dateArea}>
+                    <Text style={styles.texto}>{currentDate}</Text>
+                </View>
 
-            <View ref={viewRef} style={styles.phraseArea}>
-                <ImageBackground source={newBackground} style={styles.phraseArea}>
-                    <Text style={styles.phrase}>{showContent.content}</Text>
-                    <Text style={styles.author}>- {showContent.author} -</Text>
-                </ImageBackground>
-            </View>
+                <View ref={viewRef} style={styles.phraseArea}>
+                    <ImageBackground source={newBackground} style={styles.phraseArea}>
+                        <Text style={styles.phrase}>{showContent.content}</Text>
+                        <Text style={styles.author}>- {showContent.author} -</Text>
+                    </ImageBackground>
+                </View>
 
-            <View style={styles.backgroundArea}>
-                <SwiperBackgrounds changeBackground={newBackground => setNewBackground(newBackground)} />
-            </View>
+                <View style={styles.backgroundArea}>
+                    <SwiperBackgrounds changeBackground={newBackground => setNewBackground(newBackground)} />
+                </View>
 
-            <TouchableOpacity 
-                style={styles.shareArea}
-                onPress={imageShare}
-            >
-                <MaterialIcons name="share" size={30} color="#000" />
-            </TouchableOpacity>
-
-            <View style={styles.buttonArea}>
-                <TouchableOpacity 
-                    style={styles.buttonItem}
-                    onPress={newLoadPhrase}
+                <TouchableOpacity
+                    style={styles.shareArea}
+                    onPress={imageShare}
                 >
-                    <MaterialIcons name="sync" size={30} color="#000" />
+                    <MaterialIcons name="share" size={30} color="#000" />
                 </TouchableOpacity>
 
-                <TouchableOpacity 
-                style={styles.buttonItem}
-                onPress={() => {
-                    navigation.navigate('NewPhrase')
-                }}>
-                    <Foundation name="comment-quotes" size={30} color="black" />
-                </TouchableOpacity>
+                <View style={styles.buttonArea}>
+                    <TouchableOpacity
+                        style={styles.buttonItem}
+                        onPress={newLoadPhrase}
+                    >
+                        <MaterialIcons name="sync" size={30} color="#000" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.buttonItem}
+                        onPress={() => {
+                            navigation.navigate('NewPhrase')
+                        }}>
+                        <Foundation name="comment-quotes" size={30} color="black" />
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
-    )
-
+        )
+    }
 };
 
 
@@ -153,9 +185,10 @@ const styles = StyleSheet.create({
 
     texto: {
         height: 50,
-        width: 200,
-        fontSize: 32,
-        fontWeight: 'bold',
+        width: 230,
+        fontSize: 30,
+        paddingVertical: 6,
+        fontFamily: 'BerkshireSwash_400Regular',
         color: '#000',
         textAlign: 'center',
         borderBottomWidth: 1,
@@ -171,7 +204,9 @@ const styles = StyleSheet.create({
     },
 
     phrase: {
-        fontSize: 22,
+        fontSize: 24,
+        paddingVertical: 6,
+        fontFamily: 'Truculenta_500Medium',
         textAlign: 'center',
         color: '#000',
         marginTop: 20,
@@ -183,7 +218,9 @@ const styles = StyleSheet.create({
     },
 
     author: {
-        fontSize: 16,
+        fontSize: 17,
+        paddingVertical: 6,
+        fontFamily: 'Truculenta_400Regular',
         textAlign: 'center',
         color: '#000',
         marginTop: 25,

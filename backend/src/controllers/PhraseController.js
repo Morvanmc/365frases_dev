@@ -13,11 +13,12 @@ module.exports = {
     //Cadastrar Frases
 
     async store(req, res) {
-        const { content, author } = req.body;
+        const { content, author, agreeTerms } = req.body;
 
-        let phrase = await Phrase.create({
+        let phrase = await Phrase.insertMany({
             content,
             author,
+            agreeTerms,
         });
 
         return res.json(phrase);
